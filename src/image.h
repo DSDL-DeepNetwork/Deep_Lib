@@ -25,7 +25,7 @@ float get_color(int c, int x, int max);
 //void draw_label(image a, int r, int c, image label, const float *rgb);
 //void write_label(image a, int r, int c, image *characters, char *string, float *rgb);
 
-image image_distance(image a, image b);
+image image_distance(image a, image b); //implemented
 void scale_image(image m, float s);
 image rotate_crop_image(image im, float rad, float s, int w, int h, float dx, float dy, float aspect);
 image center_crop_image(image im, int w, int h);
