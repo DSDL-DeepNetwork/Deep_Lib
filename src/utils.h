@@ -1,8 +1,8 @@
-fndef UTILS_H
+#ifndef UTILS_H
 #define UTILS_H
 #include <stdio.h>
 #include <time.h>
-#include "darknet.h"
+#include "sg_dsdl.h"
 #include "list.h"
 
 #define TIME(a) \

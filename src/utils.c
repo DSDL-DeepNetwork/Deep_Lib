@@ -1,4 +1,4 @@
-nclude <stdio.h>
+#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <math.h>
@@ -23,7 +23,15 @@ double get_wall_time()
 }
 */
 
-double what_time_is_it_now()
+/*************************************************************************
+ * Function: what_time_is_it_now()                                       *
+ * Input: None                                                           *
+ * Output: None                                                          *
+ * 시간측정하는 함수                                                     *
+ * ***********************************************************************/
+
+double 
+what_time_is_it_now()
 {
     struct timespec now;
     clock_gettime(CLOCK_REALTIME, &now);
@@ -473,19 +481,6 @@ float *parse_fields(char *line, int n)
     return field;
 }
 
-float sum_array(float *a, int n)
-{
-    int i;
-    float sum = 0;
-    for(i = 0; i < n; ++i) sum += a[i];
-    return sum;
-}
-
-float mean_array(float *a, int n)
-{
-    return sum_array(a,n)/n;
-}
-
 void mean_arrays(float **a, int n, int els, float *avg)
 {
     int i;
@@ -501,12 +496,63 @@ void mean_arrays(float **a, int n, int els, float *avg)
     }
 }
 
-void print_statistics(float *a, int n)
+/****************************************************************************
+ * Function: Print_statistics                                               *
+ * Input: 실수 배열(error), 실수 배열 크기                                  *
+ * output: None                                                             *
+ * 배열의 MSE 및 평균, 분산 정보 출력                                       *
+ * Edited: Siyeong                                                          *
+ * **************************************************************************/
+void 
+print_statistics(float *a, int n)
 {
     float m = mean_array(a, n);
     float v = variance_array(a, n);
     printf("MSE: %.6f, Mean: %.6f, Variance: %.6f\n", mse_array(a, n), m, v);
 }
+
+/****************************************************************************
+ * Function: Print_statistics                                               *
+ * Input: 실수 배열(error), 실수 배열 크기                                  *
+ * output: 배열의 총합                                                      *
+ * Edited: Siyeong                                                          *
+ * **************************************************************************/
+float 
+sum_array(float *a, int n)
+{
+    int i;
+    float sum = 0;
+    for(i = 0; i < n; ++i) sum += a[i];
+    return sum;
+}
+
+/****************************************************************************
+ * Function: Print_statistics                                               *
+ * Input: 실수 배열(error), 실수 배열 크기                                  *
+ * output: 배열의 평균(float)                                               *
+ * Edited: Siyeong                                                          *
+ * **************************************************************************/
+float 
+mean_array(float *a, int n)
+{
+    return sum_array(a,n)/n;
+}
+
+/***************************************************************************
+ * Function: mse_array                                                     *
+ * Input: 실수 배열(error), 실수 배열의 크기                               *
+ * Output: MSE (float)                                                     *
+ * edited: Siyeong                                                         *
+ * *************************************************************************/
+float 
+mse_array(float *a, int n)
+{
+    int i;
+    float sum = 0;
+    for(i = 0; i < n; ++i) sum += a[i]*a[i];
+    return sqrt(sum/n);
+}
+
 
 float variance_array(float *a, int n)
 {
@@ -538,14 +584,6 @@ float dist_array(float *a, float *b, int n, int sub)
     float sum = 0;
     for(i = 0; i < n; i += sub) sum += pow(a[i]-b[i], 2);
     return sqrt(sum);
-}
-
-float mse_array(float *a, int n)
-{
-    int i;
-    float sum = 0;
-    for(i = 0; i < n; ++i) sum += a[i]*a[i];
-    return sqrt(sum/n);
 }
 
 void normalize_array(float *a, int n)
