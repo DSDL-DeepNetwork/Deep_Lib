@@ -1,4 +1,4 @@
-
+/*
  warranty implied; use at your own risk
 
    Do this:

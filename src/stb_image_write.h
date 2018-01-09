@@ -1,4 +1,5 @@
- out PNG/BMP/TGA images to C stdio - Sean Barrett 2010
+/* 
+out PNG/BMP/TGA images to C stdio - Sean Barrett 2010
                             no warranty implied; use at your own risk
    Before #including,
        #define STB_IMAGE_WRITE_IMPLEMENTATION
