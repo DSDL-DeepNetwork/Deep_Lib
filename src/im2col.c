@@ -31,15 +31,17 @@ input	:*data_im: image data 주소값
 	 height : image height	width : image width
 	 ksize : kernel size	stride : stride
 	 pad : padding		
-output	:*data_col : column으로 저장된image data 주소값 
+output	: None 
+기능: *data_col : column으로 저장된 image date 주소값
+ref: https://arxiv.org/pdf/1603.07285.pdf page 15 (relationship 6)
 *********************************************************************/
 void im2col_cpu(float* data_im,
      int channels,  int height,  int width,
      int ksize,  int stride, int pad, float* data_col)
 {
     int c,h,w;
-    int height_col = (height + 2*pad - ksize) / stride + 1;
-    int width_col = (width + 2*pad - ksize) / stride + 1;
+    int height_col = (height + 2*pad - ksize) / stride + 1; //ref
+    int width_col = (width + 2*pad - ksize) / stride + 1;   //ref
 
     int channels_col = channels * ksize * ksize;
     for (c = 0; c < channels_col; ++c) {
