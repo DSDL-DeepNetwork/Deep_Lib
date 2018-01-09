@@ -10,6 +10,55 @@
 #define STB_IMAGE_WRITE_IMPLEMENTATION
 #include "stb_image_write.h"
 
+/**********************************************************
+ * make_empty_image (내장 함수)                           *
+ * input: weight, height, channel                         *
+ * ouput: image                                           *
+ * image structure 생성 및 초기화                         *
+ **********************************************************/
+image 
+make_empty_image(int w, int h, int c)
+{
+    image out;
+    out.data = 0;
+    out.h = h;
+    out.w = w;
+    out.c = c;
+    return out;
+}
+
+/**********************************************************
+ * make_image                                             *
+ * input: weight, height, channel                         *
+ * ouput: image                                           *
+ * 메모리 할당 및 해당 pixel 0으로 채우기                 *
+ **********************************************************/
+image 
+make_image(int w, int h, int c)
+{
+    image out = make_empty_image(w,h,c);
+    out.data = calloc(h*w*c, sizeof(float));
+    return out;
+}
+
+image make_random_image(int w, int h, int c)
+{
+    image out = make_empty_image(w,h,c);
+    out.data = calloc(h*w*c, sizeof(float));
+    int i;
+    for(i = 0; i < w*h*c; ++i){
+        out.data[i] = (rand_normal() * .25) + .5;
+    }
+    return out;
+}
+
+image float_to_image(int w, int h, int c, float *data)
+{
+    image out = make_empty_image(w,h,c);
+    out.data = data;
+    return out;
+}
+
 /********************************************************
  * Function: transpose_image                            *
  * Input: Image type                                    *
