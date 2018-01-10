@@ -3,6 +3,8 @@
 #include <stdlib.h>
 #include <assert.h>
 
+#include "parser.h" //??
+
 #include "blas.h"
 #include "list.h"
 #include "option_list.h"
