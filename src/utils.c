@@ -195,11 +195,18 @@ char *basecfg(char *cfgfile)
     return c;
 }
 
-int alphanum_to_int(char c)
+///////////////////////////
+// need call check
+// character char -> int 
+int 
+alphanum_to_int(char c)
 {
-    return (c < 58) ? c - 48 : c-87;
+    return (c < 58) ? c - 48 : c - 87;
 }
-char int_to_alphanum(int i)
+
+// int i -> char
+char 
+int_to_alphanum(int i)
 {
     if (i == 36) return '.';
     return (i < 10) ? i + 48 : i + 87;
@@ -304,7 +311,9 @@ list *split_str(char *s, char delim)
     return l;
 }
 
-void strip(char *s)
+// strip function: eliminate \t \n ' '  from string
+void 
+strip(char *s)
 {
     size_t i;
     size_t len = strlen(s);
@@ -317,7 +326,9 @@ void strip(char *s)
     s[len-offset] = '\0';
 }
 
-void strip_char(char *s, char bad)
+// custom strip function: eliminate 'bad' from string 
+void 
+strip_char(char *s, char bad)
 {
     size_t i;
     size_t len = strlen(s);
@@ -337,7 +348,10 @@ void free_ptrs(void **ptrs, int n)
     free(ptrs);
 }
 
-char *fgetl(FILE *fp)
+// line에 대한 memory allocation... (추후 메모리 해제 필요)
+// 해당 파일에서의 \n 단위를 라인 단위...
+char *
+fgetl(FILE *fp)
 {
     if(feof(fp)) return 0;
     size_t size = 512;

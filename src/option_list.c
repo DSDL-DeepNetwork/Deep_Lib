@@ -4,7 +4,13 @@
 #include "option_list.h"
 #include "utils.h"
 
-list *read_data_cfg(char *filename)
+// refer cfg file form
+// change from cfg to list
+// 추후 해당 option에 맞게 layer 생성
+// #: comment in cfg file
+// ;: end of string in cfg file
+list *
+read_data_cfg(char *filename)
 {
     FILE *file = fopen(filename, "r");
     if(file == 0) file_error(filename);
@@ -49,7 +55,19 @@ metadata get_metadata(char *file)
     return m;
 }
 
-int read_option(char *s, list *options)
+//list insert key:value
+// e.g. batch=128
+// ----------------------
+// | key: batch(char)   | -> list
+// | value: 128(char)   |
+// ----------------------
+// batch=128 -> batch'\0'128
+//              ^        ^
+//              |        |
+//              s -> key val
+// memory leak?
+int 
+read_option(char *s, list *options)
 {
     size_t i;
     size_t len = strlen(s);
@@ -67,7 +85,8 @@ int read_option(char *s, list *options)
     return 1;
 }
 
-void option_insert(list *l, char *key, char *val)
+void 
+option_insert(list *l, char *key, char *val)
 {
     kvp *p = malloc(sizeof(kvp));
     p->key = key;
@@ -76,7 +95,8 @@ void option_insert(list *l, char *key, char *val)
     list_insert(l, p);
 }
 
-void option_unused(list *l)
+void 
+option_unused(list *l)
 {
     node *n = l->front;
     while(n){
@@ -88,7 +108,9 @@ void option_unused(list *l)
     }
 }
 
-char *option_find(list *l, char *key)
+// list 내의 특정 key를 가지는 component의 value를 반환한다
+char *
+option_find(list *l, char *key)
 {
     node *n = l->front;
     while(n){
@@ -101,7 +123,11 @@ char *option_find(list *l, char *key)
     }
     return 0;
 }
-char *option_find_str(list *l, char *key, char *def)
+
+// list내의 key의 value를 찾는다. 찾지 못했을 때는 def를 반환한다?
+// 문자열로 반환
+char *
+option_find_str(list *l, char *key, char *def)
 {
     char *v = option_find(l, key);
     if(v) return v;
@@ -109,7 +135,10 @@ char *option_find_str(list *l, char *key, char *def)
     return def;
 }
 
-int option_find_int(list *l, char *key, int def)
+// list내의 key의 value를  찾는다. 찾지 못했을 때는 def로 반환한다.
+// int로 반환
+int 
+option_find_int(list *l, char *key, int def)
 {
     char *v = option_find(l, key);
     if(v) return atoi(v);
@@ -117,24 +146,35 @@ int option_find_int(list *l, char *key, int def)
     return def;
 }
 
-int option_find_int_quiet(list *l, char *key, int def)
+// list내의 key의 value를  찾는다. 찾지 못했을 때는 def로 반환한다.
+// float로 반환
+float 
+option_find_float(list *l, char *key, float def)
+{
+    char *v = option_find(l, key);
+    if(v) return atof(v);
+    fprintf(stderr, "%s: Using default '%lf'\n", key, def);
+    return def;
+}
+
+// list내의 key의 value를  찾는다. 찾지 못했을 때는 def로 반환한다.
+// 정수로 반환
+// 경고문 없음
+int 
+option_find_int_quiet(list *l, char *key, int def)
 {
     char *v = option_find(l, key);
     if(v) return atoi(v);
     return def;
 }
 
-float option_find_float_quiet(list *l, char *key, float def)
+// list내의 key의 value를  찾는다. 찾지 못했을 때는 def로 반환한다.
+// 실수로 반환
+// 경고문 없음
+float 
+option_find_float_quiet(list *l, char *key, float def)
 {
     char *v = option_find(l, key);
     if(v) return atof(v);
-    return def;
-}
-
-float option_find_float(list *l, char *key, float def)
-{
-    char *v = option_find(l, key);
-    if(v) return atof(v);
-    fprintf(stderr, "%s: Using default '%lf'\n", key, def);
     return def;
 }
