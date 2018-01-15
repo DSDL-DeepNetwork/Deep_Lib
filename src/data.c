@@ -90,6 +90,15 @@ char **find_replace_paths(char **paths, int n, char *find, char *replace)
     return replace_paths;
 }
 
+/***************************************************************
+입력 / **paths : 경로가 저장된 주소
+n : 경로의 수(이미지의 수)
+w : width
+h : height
+출력 / gray scale의 n개의 이미지 데이터
+기능 / 이미지  로드, gray scale화
+***************************************************************/
+
 matrix load_image_paths_gray(char **paths, int n, int w, int h)
 {
     int i;
@@ -110,6 +119,14 @@ matrix load_image_paths_gray(char **paths, int n, int w, int h)
     }
     return X;
 }
+/***************************************************************
+입력 / **paths : 경로가 저장된 주소
+n : 경로의 수(이미지의 수)
+w : width
+h : height
+출력 / n개의 이미지 데이터
+기능 / 이미지 로드
+***************************************************************/
 
 matrix load_image_paths(char **paths, int n, int w, int h)
 {
@@ -126,6 +143,20 @@ matrix load_image_paths(char **paths, int n, int w, int h)
     }
     return X;
 }
+/***************************************************************
+입력 / **paths : 경로가 저장된 주소
+n : 경로의 수(이미지의 수)
+min, max : 랜덤변수(scale) 범위  
+size : 컷팅 사이즈(정사각형)
+angle : 회전 각도 (라디안)
+aspect : 랜덤 비율의 최대치 (h/w)
+hue : hue
+saturation : saturation
+exposure : 노출 값
+center : center 결정 여부 bool 변수 (0 or 1)
+출력 / augment된  이미지 데이터 구조체
+기능 / 이미지를 augment
+***************************************************************/
 
 matrix load_image_augment_paths(char **paths, int n, int min, int max, int size, float angle, float aspect, float hue, float saturation, float exposure, int center)
 {
@@ -323,7 +354,14 @@ void fill_truth_region(char *path, float *truth, int classes, int num_boxes, int
     }
     free(boxes);
 }
-
+/*************************************************
+입력/
+im: image
+*rle:
+n:
+출력/X
+기능/run length encoding
+*************************************************/
 void load_rle(image im, int *rle, int n)
 {
     int count = 0;
@@ -339,7 +377,14 @@ void load_rle(image im, int *rle, int n)
         im.data[count] = curr;
     }
 }
-
+/****************************************************
+입력/
+image src : source image struct
+image dest : destination image struct
+c : destination image의 channel 수
+출력/X
+기능/source image와 destination image의 or 연산
+****************************************************/
 void or_image(image src, image dest, int c)
 {
     int i;
@@ -347,7 +392,14 @@ void or_image(image src, image dest, int c)
         if(src.data[i]) dest.data[dest.w*dest.h*c + i] = 1;
     }
 }
+/****************************************************
+입력/
+image src : source image
+출력/ X
+기능/ 첫 채널부터 순차적으로 '1'을 detect(나머지  채널에서  해당 pixel값은 0 )
+ masking 용도로 추정
 
+***************************************************/
 void exclusive_image(image src)
 {
     int k, j, i;
@@ -468,8 +520,15 @@ void fill_truth_detection(char *path, int num_boxes, float *truth, int classes, 
     free(boxes);
 }
 
-#define NUMCHARS 37
+#define NUMCHARS 37 // 알파벳(26) + 숫자(10) + ?(1) 
+/****************************************************************
+입력/
+*pred : 아마 결과값?
+n : 37개씩 판단할 횟수 
+출력/ X
+기능/ pred에 저장된 값들을 37개씩 나눠서 가장 큰 값의 index를해당 문자로 출력
 
+****************************************************************/
 void print_letters(float *pred, int n)
 {
     int i;
@@ -479,7 +538,14 @@ void print_letters(float *pred, int n)
     }
     printf("\n");
 }
-
+/***************************************************************
+입력/
+*path: 경로
+n: 
+*truth:
+출력/X
+기능/기호 추출????
+***************************************************************/
 void fill_truth_captcha(char *path, int n, float *truth)
 {
     char *begin = strrchr(path, '/');
