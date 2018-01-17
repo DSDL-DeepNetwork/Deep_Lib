@@ -357,10 +357,10 @@ void fill_truth_region(char *path, float *truth, int classes, int num_boxes, int
 /*************************************************
 입력/
 im: image
-*rle:
-n:
+*rle: image의 run-length encoding된 배열의 주소
+n: rle의 index 수
 출력/X
-기능/run length encoding
+기능/run length encoding된 image data를 image 형태로 load
 *************************************************/
 void load_rle(image im, int *rle, int n)
 {
@@ -541,10 +541,10 @@ void print_letters(float *pred, int n)
 /***************************************************************
 입력/
 *path: 경로
-n: 
-*truth:
-출력/X
-기능/기호 추출????
+n: 37개씩 판단할 횟수
+*truth: 경로의 진리표 주소
+출력/ X
+기능/path에서 알파벳과 숫자외의 기호를 판독
 ***************************************************************/
 void fill_truth_captcha(char *path, int n, float *truth)
 {
@@ -561,6 +561,17 @@ void fill_truth_captcha(char *path, int n, float *truth)
     }
 }
 
+/**************************************************************************
+입력/
+**paths : 경로의 주소
+n : 랜덤 경로의 개수
+m : 랜덤하게 경로를 생성할  index의 개수
+k : 37개씩 판단할 횟수
+출력/
+d : 랜덤 경로 관련 data 구조체
+기능/
+랜덤 경로의 문자 유효성 판독 및 data 구조체에 저장
+*************************************************************************/
 data load_data_captcha(char **paths, int n, int m, int k, int w, int h)
 {
     if(m) paths = get_random_paths(paths, n, m);
@@ -575,7 +586,16 @@ data load_data_captcha(char **paths, int n, int m, int k, int w, int h)
     if(m) free(paths);
     return d;
 }
-
+/****************************************************************************
+입력/
+**paths : 경로의 주소
+n : 랜덤 경로를 만들 개수
+m : 랜덤하게 경로를 생성할 index의 개수
+출력/
+d : 랜덤 경로 관련 data 구조체
+기능/
+랜덤 경로를 data 구조체에 저장
+***************************************************************************/
 data load_data_captcha_encode(char **paths, int n, int m, int w, int h)
 {
     if(m) paths = get_random_paths(paths, n, m);
@@ -587,7 +607,16 @@ data load_data_captcha_encode(char **paths, int n, int m, int w, int h)
     if(m) free(paths);
     return d;
 }
-
+/***************************************************************************
+입력/
+*path : 경로
+**labels : 경로에서 찾을 text의 주소
+k : label(text)의 개수
+*truth : truth table의 주소
+출력/ X
+기능/
+경로에서 labels에 적힌 text가 한 부분만 있는지 여부 확인
+***************************************************************************/
 void fill_truth(char *path, char **labels, int k, float *truth)
 {
     int i;
@@ -601,7 +630,11 @@ void fill_truth(char *path, char **labels, int k, float *truth)
     }
     if(count != 1 && (k != 1 || count != 0)) printf("Too many or too few labels: %d, %s\n", count, path);
 }
-
+/****************************************************************************
+입력/
+출력/ 
+기능/ ?????????????????????????????????????????????????????????????????????
+***************************************************************************/
 void fill_hierarchy(float *truth, int k, tree *hierarchy)
 {
     int j;
@@ -634,6 +667,15 @@ void fill_hierarchy(float *truth, int k, tree *hierarchy)
     }
 }
 
+/****************************************************************************
+입력/
+**paths : 경로의 주소
+n : 경로의 개수
+출력/
+y : txt 파일로 변환된 image data를 저장
+기능/
+image(jpg, png) data를 txt 파일로 변환후 내용을 읽고 y에 저장 후 반환
+***************************************************************************/
 matrix load_regression_labels_paths(char **paths, int n)
 {
     matrix y = make_matrix(n, 1);
@@ -651,6 +693,18 @@ matrix load_regression_labels_paths(char **paths, int n)
     }
     return y;
 }
+/****************************************************************************
+입력/
+**paths : 경로의 주소
+n : 경로의 개수
+**labels : label의 주소
+k : 
+출력/
+
+기능/
+경로에 label의 값이 한번만 있는지 확인하고 fill_hierarchy() 함수를 적용 후에
+y에 matrix에 저장
+***************************************************************************/
 
 matrix load_labels_paths(char **paths, int n, char **labels, int k, tree *hierarchy)
 {
@@ -664,6 +718,17 @@ matrix load_labels_paths(char **paths, int n, char **labels, int k, tree *hierar
     }
     return y;
 }
+/****************************************************************************
+입력/
+**paths : 경로의 주소
+n : 경로의 개수
+k : tag의 threshold
+출력/
+y : tag가 저장된 matrix
+기능/
+paths 상에 "imgs"부분을 .txt로 바꿨을 때 존재하는 txt 파일을 연 후에 txt 파일의
+내용물의 정수(tag)를 판독
+***************************************************************************/
 
 matrix load_tags_paths(char **paths, int n, int k)
 {
@@ -692,7 +757,12 @@ matrix load_tags_paths(char **paths, int n, int k)
     printf("%d/%d\n", count, n);
     return y;
 }
-
+/**************************************************************************
+출력/
+labels : 배열화된 lists의 주소
+기능/
+file의 경로를 list로 받고 이를 배열로 다시 변환
+**************************************************************************/
 char **get_labels(char *filename)
 {
     list *plist = get_paths(filename);
@@ -700,7 +770,10 @@ char **get_labels(char *filename)
     free_list(plist);
     return labels;
 }
-
+/************************************************************************
+data structure 초기화
+shallow의 값에 따라 value만 초기화할지 matrix 전체 초기화할지 결정 
+************************************************************************/
 void free_data(data d)
 {
     if(!d.shallow){
@@ -711,7 +784,15 @@ void free_data(data d)
         free(d.y.vals);
     }
 }
-
+/***********************************************************************
+입력/
+*path : 경로
+classes : 수
+출력/
+mask : 생성된 mask 제작
+기능/
+run-length encoding을 이용한 mask 제작
+***********************************************************************/
 image get_segmentation_image(char *path, int w, int h, int classes)
 {
     char labelpath[4096];
@@ -726,9 +807,9 @@ image get_segmentation_image(char *path, int w, int h, int classes)
     char buff[32788];
     int id;
     image part = make_image(w, h, 1);
-    while(fscanf(file, "%d %s", &id, buff) == 2){
+    while(fscanf(file, "%d %s", &id, buff) == 2){ 
         int n = 0;
-        int *rle = read_intlist(buff, &n, 0);
+        int *rle = read_intlist(buff, &n, 0); //뭐가 저장되는지?????????????
         load_rle(part, rle, n);
         or_image(part, mask, id);
         free(rle);
@@ -738,7 +819,10 @@ image get_segmentation_image(char *path, int w, int h, int classes)
     free_image(part);
     return mask;
 }
-
+/***************************************************************************
+기능/
+get_segmentation_image + 마지막 class에 mask를 만듦
+***************************************************************************/
 image get_segmentation_image2(char *path, int w, int h, int classes)
 {
     char labelpath[4096];
@@ -750,7 +834,7 @@ image get_segmentation_image2(char *path, int w, int h, int classes)
     image mask = make_image(w, h, classes+1);
     int i;
     for(i = 0; i < w*h; ++i){
-        mask.data[w*h*classes + i] = 1;
+        mask.data[w*h*classes + i] = 1; //마지막장(classes) 전부 1
     }
     FILE *file = fopen(labelpath, "r");
     if(!file) file_error(labelpath);
@@ -764,6 +848,8 @@ image get_segmentation_image2(char *path, int w, int h, int classes)
         or_image(part, mask, id);
         for(i = 0; i < w*h; ++i){
             if(part.data[i]) mask.data[w*h*classes + i] = 0;
+/* 마지막 장의 data를 not  part data(rle에서 가져온)로 변환
+   이게 왜 segmentation인지...				      */
         }
         free(rle);
     }
@@ -772,7 +858,15 @@ image get_segmentation_image2(char *path, int w, int h, int classes)
     free_image(part);
     return mask;
 }
-
+/********************************************************************************************
+입력/
+출력/
+d : x,y 출력
+기능/
+랜덤 경로에 있는 이미지에 대해 augment 후 segmentation 진행하여
+x에는 augment한이미지  data 저장
+y에는 segmentation이 된 이미지가 저장
+*********************************************************************************************/
 data load_data_seg(int n, char **paths, int m, int w, int h, int classes, int min, int max, float angle, float aspect, float hue, float saturation, float exposure, int div)
 {
     char **random_paths = get_random_paths(paths, n, m);
@@ -795,9 +889,9 @@ data load_data_seg(int n, char **paths, int m, int w, int h, int classes, int mi
         image sized = rotate_crop_image(orig, a.rad, a.scale, a.w, a.h, a.dx, a.dy, a.aspect);
 
         int flip = rand()%2;
-        if(flip) flip_image(sized);
+        if(flip) flip_image(sized); // 50%확률로 뒤집음
         random_distort_image(sized, hue, saturation, exposure);
-        d.X.vals[i] = sized.data;
+        d.X.vals[i] = sized.data; //왜곡된 데이터를 X에다가 넣음
 
         image mask = get_segmentation_image(random_paths[i], orig.w, orig.h, classes);
         //image mask = make_image(orig.w, orig.h, classes+1);
@@ -861,6 +955,10 @@ data load_data_iseg(int n, char **paths, int m, int w, int h, int classes, int b
     return d;
 }
 
+/*******************************************************************************************
+detect region 설정인듯?????????????????????????????
+ground-truth box와 predicted box 영역에 대한 코드??
+*******************************************************************************************/
 data load_data_region(int n, char **paths, int m, int w, int h, int size, int classes, float jitter, float hue, float saturation, float exposure)
 {
     char **random_paths = get_random_paths(paths, n, m);
@@ -914,7 +1012,13 @@ data load_data_region(int n, char **paths, int m, int w, int h, int size, int cl
     free(random_paths);
     return d;
 }
-
+/**************************************************************************
+출력/
+기능/
+두 개의 이미지에 대해서 해당 txt에 있는 float값(iou)을 추출 후에 비교
+0.5를 기준으로 값을 0,1,secret_number 로 설정, 아마 영역 설정에 대한 부분인듯
+iou : intersection over union(accuracy of an object detection) 
+*************************************************************************/
 data load_data_compare(int n, char **paths, int m, int classes, int w, int h)
 {
     if(m) paths = get_random_paths(paths, 2*n, m);
